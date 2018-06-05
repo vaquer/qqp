@@ -208,12 +208,13 @@ class Products(Connector):
     def set_products(self):
         import concurrent.futures
         queue_task = []
+        counter = 0
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:
             for city in self.geography:
                 for region in city['municipios']:
                     for category in self.categories:
-                        if category['nombre']:
+                        if category['nombre'] :
                             print(category)
                             for sub_category in category['subcategoria']:
                                 for sub_b_category in sub_category['subcategoria']:
@@ -328,19 +329,21 @@ class Prices(Connector):
                     regions = '-'.join(map(lambda x: x['id'], city['municipios']))
                     for brand in product['marcas']:
 
-                        parameters = {
-                            'http_params': {
-                                'idMunicipio': regions,
-                                'idCiudad': city['id'],
-                                'idProducto': product['id'],
-                                'idMarca': brand['id']
-                            },
-                            'product_id': product['id'],
-                            'brand': brand['id']
-                        }
+                        if counter < 500:
+                            parameters = {
+                                'http_params': {
+                                    'idMunicipio': regions,
+                                    'idCiudad': city['id'],
+                                    'idProducto': product['id'],
+                                    'idMarca': brand['id']
+                                },
+                                'product_id': product['id'],
+                                'brand': brand['id']
+                            }
 
-                        # queue_task.append({})
-                        queue_task.append(executor.submit(self.download_prices, **parameters))
+                            # queue_task.append({})
+                            queue_task.append(executor.submit(self.download_prices, **parameters))
+                            counter += 1
 
         print("Numero de tareas ...")
         print(len(queue_task))
