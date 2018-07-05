@@ -112,7 +112,7 @@ class DownloadBrands(luigi.Task):
         with self.input().open('r') as products_file:
             products = json.load(products_file)
 
-        with open('output/geography-{}'.format(self.date.strftime('%Y%m%d'))) as geo_file:
+        with open('output/geography-{}.json'.format(self.date.strftime('%Y%m%d'))) as geo_file:
             geography = json.load(geo_file)
 
         scrapper = Brands(geography=geography, products=products)
@@ -144,7 +144,7 @@ class DownloadPrices(luigi.Task):
         with self.input().open('r') as branded_product:
             products = json.load(branded_product)
 
-        with open('output/geography-{}'.format(self.date.strftime('%Y%m%d'))) as geo_file:
+        with open('output/geography-{}.json'.format(self.date.strftime('%Y%m%d'))) as geo_file:
             geography = json.load(geo_file)
 
         prices_scrapper = Prices(products=products, geography=geography, date=self.date)
@@ -205,7 +205,7 @@ class InsertProductCatalog(luigi.Task):
             prices_file.write(str(count))
 
     def output(self):
-        return luigi.LocalTarget('output/inserted-products-{}'.format(self.date.strftime('%Y%m%d')))
+        return luigi.LocalTarget('output/inserted-products-{}.json'.format(self.date.strftime('%Y%m%d')))
 
 
 class InsertPrices(luigi.Task):
@@ -259,7 +259,7 @@ class InsertPrices(luigi.Task):
             prices_file.write(str(count))
 
     def output(self):
-        return luigi.LocalTarget('output/inserted-prices-{}'.format(self.date.strftime('%Y%m%d')))
+        return luigi.LocalTarget('output/inserted-prices-{}.json'.format(self.date.strftime('%Y%m%d')))
 
 
 class StartETL(luigi.Task):

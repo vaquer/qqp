@@ -15,7 +15,7 @@ Los datos recolectados en cada ejecución del ETL son etiquetados con el timesta
 
 El ETL se construye de steps o pasos que ejecutan cada una de las tareas necesarias para descargar y procesar los datos de origen. Cada paso o step arroja archivos con el resultado de su ejecución en la carpeta `otuput` del proyecto. Los pasos que componen el ETL es descrito en el diagrama siguiente:
 
-![Diagrama de ETL](media/ETLQQP.png)
+![Diagrama de ETL](qqp/media/ETLQQP.png)
 
 ### 1.1 Descargar Categorias
 El diseño de datos expuesto por PROFECO refleja que los productos se dividen en grupos principales los cuales a su vez contienen sub categorias y para poder obtener el catalogo completo de productos es necesario descargar esta jerarquia de grupos.
@@ -77,8 +77,25 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
 
 El resultado final de este step es la generación del archivo `output/prices-per-product-{timestamp}.json`. Ejemplo: `output/prices-per-product-20180514.json`
 ## Especificaciones tecnicas
+### Instalación Local
+Se deben correr los siguientes comandos para instalar la herramineta ETL.
+```sh
+git clone git@github.com:vaquer/qqp.git
+cd qqp
+python setup.py install
+```
+### Instalación Kubernetes
+```sh
+git clone git@github.com:vaquer/qqp.git
+cd qqp
+kubectl apply -f kubernetes/etl.yml
+```
 
-### Correr el ETL
+### Ejecucion Local del ETL
+Una vez dentro de la carpeta de qqp se debe correr el siguiente comando.
+```sh
+luigi --module qqp.etl.pipeline StartETL --local-scheduler
+```
 
 ## API QQP
 

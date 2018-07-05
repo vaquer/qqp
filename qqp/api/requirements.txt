@@ -1,0 +1,4 @@
+SQLAlchemy==1.2.8
+falcon==1.4.1
+alembic==0.9.9
+-e git+ssh://git@github.com/wizeline/sqlalchemy-pagination.git#egg=sqlalchemy-pagination

@@ -24,6 +24,6 @@ def create_qqp_engine():
     the qqp instance API
     """
     from sqlalchemy import create_engine
-    from qqp import settings
+    from qqp.api import settings
     engine = create_engine('postgresql+psycopg2://{username}:{password}@{host}:{port}/qqp'.format(**settings.DATABASE['qqp']))
     return engine

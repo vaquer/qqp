@@ -20,13 +20,14 @@ class Connector:
 
         response = self.http.get(url, params=http_params)
         if response.status_code != 200:
-            raise Exception('Error en la peticion http')
+            print('El servidor PROFECO respondio con un error. Status Code: {}'.format(str(response.status_code)))
+            return {'directory': None}
 
         return response.json()
 
     def http_qqp_extract(self, url=None, http_params={}, second_key='elemento'):
         json_response = self.http_get(url=url, http_params=http_params)
-        # print(json_response)
+
         if not json_response['directory']:
             return []
 
@@ -56,7 +57,6 @@ class Categories(Connector):
     def set_main_categories(self):
         response = self.http_qqp_extract(url=self.main_categories_url)
 
-        print("Categorias")
         def correct_format(category):
             return {'id': category['clave'], 'nombre': category['titulo']}
 
@@ -207,7 +207,7 @@ class Products(Connector):
         for product in products:
             if not product['cveProd'] in self.id_products:
                 self.id_products.append(product['cveProd'])
-                self.products.append({'id': product['cveProd'], 'nombre': product['Producto']})
+                self.products.append({'id': int(product['cveProd']), 'nombre': product['Producto'].strip()})
 
     def set_products(self):
         import concurrent.futures
@@ -239,6 +239,7 @@ class Products(Connector):
 
     def make_json_serializable(self):
         self.products = list(self.products)
+        # sorted(self.products, key='id')
 
 
 
@@ -263,6 +264,7 @@ class Brands(Connector):
         brands = self.http_qqp_extract(url=self.url_brands, http_params=http_params)
         for brand in brands:
             if '{0}-{1}'.format(product, brand['cve_categoria']) not in self.id_brands:
+                print(product)
                 self.id_brands.append('{0}-{1}'.format(product, brand['cve_categoria']))
                 brands_deques.append({'id': brand['cve_categoria'], 'marca': brand['titulo']})
 
@@ -270,7 +272,6 @@ class Brands(Connector):
         import concurrent.futures
         queue_task = []
 
-        print(len(self.products))
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for product in self.products:
                 for city in self.geography:
@@ -295,8 +296,9 @@ class Brands(Connector):
 
 
     def make_json_serializable(self):
+        print("Convirtiendo")
         for product in self.products:
-            if product.get('marcas', False):
+            if product.get('marcas', False) is not False:
                 product['marcas'] = list(product['marcas'])
 
 
@@ -335,7 +337,7 @@ class Prices(Connector):
             for product in self.products:
                 for city in self.geography:
                     regions = '-'.join(map(lambda x: x['id'], city['municipios']))
-                    for brand in product['marcas']:
+                    for brand in product.get('marcas', {'id': None, 'marca': None}):
                         parameters = {
                             'http_params': {
                                 'idMunicipio': regions,

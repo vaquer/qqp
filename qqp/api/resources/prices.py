@@ -36,6 +36,7 @@ class PricesResource:
         page_object = paginate(products, page, limit)
         response.status = falcon.HTTP_200
         response.content_type = falcon.MEDIA_JSON
+
         response.media = {
             'results': [self.convert_to_dict(product) for product in page_object.items],
             'meta': {
@@ -57,5 +58,6 @@ class PricesResource:
             'direccion': product.direccion,
             'cp': product.codigo_postal,
             'fecha_observacion': product.fecha_observacion.strftime('%d/%m/%Y'),
-            'fecha_actualizacion': product.fecha_actualizacion.strftime('%d/%m/%Y')
+            'fecha_actualizacion': product.fecha_actualizacion.strftime('%d/%m/%Y'),
+            'precio': "{0:.2f}".format(product.precio)
         }
