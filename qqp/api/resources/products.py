@@ -13,7 +13,7 @@ import logging
 import falcon
 from sqlalchemy import desc
 from sqlalchemy_pagination import paginate
-from qqp.api.db.models import Product
+from db.models import Product
 
 class ProductsResource:
     def __init__(self, **kwargs):

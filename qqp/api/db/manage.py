@@ -11,7 +11,7 @@ def migrate(engine):
     Create tables on data base
     needed for qqp API
     """
-    from qqp.api.db.models import Product, Price, Base
+    from db.models import Product, Price, Base
     print("Aplicando migracion de base de datos")
     Base.metadata.create_all(engine)
 
@@ -24,6 +24,6 @@ def create_qqp_engine():
     the qqp instance API
     """
     from sqlalchemy import create_engine
-    from qqp.api import settings
+    import settings
     engine = create_engine('postgresql+psycopg2://{username}:{password}@{host}:{port}/qqp'.format(**settings.DATABASE['qqp']))
     return engine

@@ -1,10 +1,10 @@
 import os
 import falcon
 from sqlalchemy.orm import sessionmaker
-from qqp.api.resources.prices import PricesResource
-from qqp.api.resources.products import ProductsResource
-from qqp.api.db.manage import create_qqp_engine, migrate
-from qqp.api.utils import json_error_serializer
+from resources.prices import PricesResource
+from resources.products import ProductsResource
+from db.manage import create_qqp_engine, migrate
+from utils import json_error_serializer
 
 databse_engine = create_qqp_engine()
 Session = sessionmaker(bind=databse_engine)

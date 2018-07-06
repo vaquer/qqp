@@ -12,7 +12,7 @@ import falcon
 import logging
 from sqlalchemy import desc
 from sqlalchemy_pagination import paginate
-from qqp.api.db.models import Price
+from db.models import Price
 
 
 class PricesResource:

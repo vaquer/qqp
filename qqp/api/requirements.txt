@@ -1,4 +1,6 @@
 SQLAlchemy==1.2.8
 falcon==1.4.1
 alembic==0.9.9
--e git+ssh://git@github.com/wizeline/sqlalchemy-pagination.git#egg=sqlalchemy-pagination
+gunicorn==19.8.1
+psycopg2==2.7.4
+-e git+https://git@github.com/vaquer/sqlalchemy-pagination.git#egg=sqlalchemy-pagination
