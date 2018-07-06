@@ -78,18 +78,33 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
 El resultado final de este step es la generación del archivo `output/prices-per-product-{timestamp}.json`. Ejemplo: `output/prices-per-product-20180514.json`
 ## Especificaciones tecnicas
 ### Instalación Local
-Se deben correr los siguientes comandos para instalar la herramineta ETL.
+Para instalar la aplicación en ambientes locales en ambientes `Linux`, se debe hacer lo siguiente.
+1. Definir variables de entorno con los valores necesarios.
+```sh
+export DATABASE_HOST="0.0.0.0"
+export DATABASE_USERNAME="username"
+export DATABASE_PASSWORD="password"
+export DATABASE_PORT="5435"
+export RUN_MIGRATIONS="True"
+```
+2. Correr los siguientes comandos.
 ```sh
 git clone git@github.com:vaquer/qqp.git
 cd qqp
 python setup.py install
 ```
 ### Instalación Kubernetes
+Para implementaciones basadas en Kubernetes se tienen definidos los archivos de definición para deployment manejando la versión `v1beta1`.
+
+1. Editar variables de entorno en los archivos `kubernetes/postgres.yml` y `kubernetes/etl.yml`, los valores deben coincidir en ambos archivos.
+
+2. Correr los siguientes comandos.
 ```sh
 git clone git@github.com:vaquer/qqp.git
 cd qqp
 kubectl apply -f kubernetes/etl.yml
 ```
+*NOTA: Esta aplicación no requiere definición de servicio puesto que no expone puertos para consumo exterior*
 
 ### Ejecucion Local del ETL
 Una vez dentro de la carpeta de qqp se debe correr el siguiente comando.
@@ -99,4 +114,40 @@ luigi --module qqp.etl.pipeline StartETL --local-scheduler
 
 ## API QQP
 
-Los principales problemas son desempeño a gran escala, errores en diseño y falta de estandarización, se requiere un paso previo para tener información lista para ser consultada.
+Se contruyo un API con una mejor estructura para consumo y consulta de datos de la base de datos QQP. API QQP esta diseñada con base en los estandares REST y regresa resultados en formato JSON.
+
+### Uso
+El uso del API puede consultarse en la [documentación](https://vaquer.github.io/qqp-docs/#introduccion) oficial.
+
+### Instalación local
+Para instalar la aplicación en ambientes locales en ambientes `Linux`, se debe hacer lo siguiente.
+1. Definir variables de entorno con los valores necesarios.
+```sh
+export DATABASE_HOST="0.0.0.0"
+export DATABASE_USERNAME="username"
+export DATABASE_PASSWORD="password"
+export DATABASE_PORT="5435"
+export RUN_MIGRATIONS="True"
+```
+2. Correr los siguientes comandos.
+```sh
+git clone git@github.com:vaquer/qqp.git
+cd qqp
+python setup.py install
+```
+### Instalación Kubernetes
+Para implementaciones basadas en Kubernetes se tienen definidos los archivos de definición para deployment manejando la versión `v1beta1`.
+
+1. Editar variables de entorno en los archivos `kubernetes/postgres.yml` y `kubernetes/api.yml`, los valores deben coincidir en ambos archivos.
+
+
+2. Correr los siguientes comandos.
+```sh
+git clone git@github.com:vaquer/qqp.git
+cd qqp
+kubectl apply -f kubernetes/postgres.yml
+kubectl apply -f kubernetes/api.yml
+```
+*NOTA 1: No es necessario editar ni levantar el archivo kubernetes/postgres.yml si ya se hizo en la instalación del ETL*
+
+*NOTA 2: Es responsabilidad del administrador del sistema la creación los archivos con las definiciones de los servicios Kubernetes que expondran la aplicación.*
