@@ -1,0 +1,31 @@
+apiVersion: v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: api-qqp
+  name: api-qqp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: api-qqp
+  template:
+    metadata:
+      labels:
+        app: api-qqp
+      spec:
+        containers:
+        - env:
+          - name: DATABASE_HOST
+            value: host
+          - name: DATABASE_USERNAME
+            value: username
+          - name: DATABASE_PASSWORD
+            value: password
+          - name: DATABASE_PORT
+            value: '5432'
+        image: mxabierto/api-qqp:v1
+      name: api-qqp
+      ports:
+      - containerPort: 8000
+        protocol: TCP
