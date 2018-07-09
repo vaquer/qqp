@@ -22,6 +22,7 @@ class ProductsResource:
         self.db = kwargs.get('db_session', NotImplemented)
 
     def on_get(self, request, response, id_product=None):
+        response.content_type = falcon.MEDIA_JSON
         if id_product is None:
             limit = request.get_param_as_int('limit', min=50, max=200) or 100
             page = request.get_param_as_int('page', 1)
@@ -43,23 +44,25 @@ class ProductsResource:
             try:
                 products = self.db.query(Product)\
                     .filter(Product.id == id_product)\
-                    .first()
+                    .one()
                 if not products:
+                    response.media = {'error': 'Not Found'}
                     response.status = falcon.HTTP_404
                     return
 
                 response.media = self.convert_to_dict(products)
             except NoResultFound as not_found_error:
                 self.logger.info('Product not Found {}'.format(id_product))
+                response.media = {'error': 'Not Found'}
                 response.status = falcon.HTTP_404
                 return
             except Exception as extreme_exception:
                 self.logger.error('Exception in Product endpoint id_product: {}, exception: {}'.format(id_product, str(extreme_exception)))
+                response.media = {'error': 'Internal Error, Try again later'}
                 response.status = falcon.HTTP_500
                 return
 
         response.status = falcon.HTTP_200
-        response.content_type = falcon.MEDIA_JSON
 
     def convert_to_dict(self, product):
         return {

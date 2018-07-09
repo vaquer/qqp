@@ -12,6 +12,7 @@ import falcon
 import logging
 from sqlalchemy import desc
 from sqlalchemy_pagination import paginate
+from sqlalchemy.exc import DataError
 from db.models import Price
 
 
@@ -23,19 +24,32 @@ class PricesResource:
     def on_get(self, request, response, id_product=None):
         limit = request.get_param_as_int('limit', min=50, max=200) or 100
         page = request.get_param_as_int('page', 1)
+        response.content_type = falcon.MEDIA_JSON
 
         if id_product:
-            products = self.db.query(Price)\
-                .filter(Price.id_producto == str(id_product))\
-                .yield_per(limit)
+            try:
+                products = self.db.query(Price)\
+                    .filter(Price.id_producto == str(id_product))\
+                    .order_by(desc(Price.fecha_actualizacion))
+
+                if not products:
+                    response.status = falcon.HTTP_200
+                    response.media = {'error': 'Not Found'}
+                    return
+
+            except DataError as data_error:
+                self.logger.info('Product not Found {}'.format(id_product))
+                response.media = {'error': 'Not Found'}
+                response.status = falcon.HTTP_404
+                return
         else:
             products = self.db.query(Price)\
                 .order_by(desc(Price.fecha_actualizacion))\
                 .order_by(Price.id_producto)
 
+        print(products)
         page_object = paginate(products, page, limit)
         response.status = falcon.HTTP_200
-        response.content_type = falcon.MEDIA_JSON
 
         response.media = {
             'results': [self.convert_to_dict(product) for product in page_object.items],

@@ -7,7 +7,7 @@ from db.manage import create_qqp_engine, migrate
 from utils import json_error_serializer
 
 databse_engine = create_qqp_engine()
-Session = sessionmaker(bind=databse_engine)
+Session = sessionmaker(bind=databse_engine, autocommit=True, autoflush=True)
 database_session = Session()
 
 if os.environ.get('RUN_MIGRATIONS') == 'True':
