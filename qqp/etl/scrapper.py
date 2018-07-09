@@ -263,10 +263,9 @@ class Brands(Connector):
     def process_brand_by_product(self, http_params={}, brands_deques=deque(), product=None):
         brands = self.http_qqp_extract(url=self.url_brands, http_params=http_params)
         for brand in brands:
-            if '{0}-{1}'.format(product, brand['cve_categoria']) not in self.id_brands:
-                print(product)
-                self.id_brands.append('{0}-{1}'.format(product, brand['cve_categoria']))
-                brands_deques.append({'id': brand['cve_categoria'], 'marca': brand['titulo']})
+            if '{0}-{1}'.format(product['id'], brand['cve_categoria']) not in self.id_brands:
+                self.id_brands.append('{0}-{1}'.format(product['id'], brand['cve_categoria']))
+                product['marcas'].append({'id': brand['cve_categoria'], 'marca': brand['titulo']})
 
     def set_brands_by_product(self):
         import concurrent.futures
@@ -285,7 +284,7 @@ class Brands(Connector):
                             'idCiudad': city['id'],
                             'idMunicipio': regions
                         },
-                        'product': product['id'],
+                        'product': product,
                         'brands_deques': product['marcas']
                     }
 
