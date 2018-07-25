@@ -201,13 +201,18 @@ class Products(Connector):
 
         super(Products, self).__init__(*args, **kwargs)
 
-    def get_async_product(self, url=None, http_params={}):
+    def get_async_product(self, url=None, http_params={}, category={}, catalog=''):
         products = self.http_qqp_extract(url=url, http_params=http_params)
         print(products)
         for product in products:
             if not product['cveProd'] in self.id_products:
                 self.id_products.append(product['cveProd'])
-                self.products.append({'id': int(product['cveProd']), 'nombre': product['Producto'].strip()})
+                self.products.append({
+                    'id': int(product['cveProd']),
+                    'nombre': product['Producto'].strip(),
+                    'catalogo': catalog,
+                    'categoria': category,
+                })
 
     def set_products(self):
         import concurrent.futures
@@ -228,11 +233,13 @@ class Products(Connector):
                                             'qqp_subseccion2': sub_b_category['nombre'],
                                             'idCiudad': city['id'],
                                             'idMunicipio': region['id']
-                                        }
+                                        },
+                                        'catalog': category['nombre'],
+                                        'category': sub_category['nombre']
                                     }
 
-                                    print(parameters)
                                     queue_task.append(executor.submit(self.get_async_product, **parameters))
+
 
             for task in queue_task:
                 task.result()
@@ -260,7 +267,7 @@ class Brands(Connector):
 
         super(Brands, self).__init__(*args, **kwargs)
 
-    def process_brand_by_product(self, http_params={}, brands_deques=deque(), product=None):
+    def process_brand_by_product(self, http_params={}, brands_deques=deque(), product_id=None, product=None):
         brands = self.http_qqp_extract(url=self.url_brands, http_params=http_params)
         for brand in brands:
             if '{0}-{1}'.format(product['id'], brand['cve_categoria']) not in self.id_brands:
@@ -270,6 +277,7 @@ class Brands(Connector):
     def set_brands_by_product(self):
         import concurrent.futures
         queue_task = []
+        counter = 0
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for product in self.products:
@@ -323,15 +331,20 @@ class Prices(Connector):
         if product_id and brand:
             prices = self.http_qqp_extract(http_params=http_params, url=self.url)
             for product in prices:
-                print(product)
-                final_product = {'producto_id': product_id, 'marca': brand, 'id_marca': id_brand, 'date': self.date.strftime('%Y%m%d')}
+
+                final_product = {
+                    'producto_id': product_id,
+                    'marca': brand,
+                    'id_marca': id_brand,
+                    'date': self.date.strftime('%Y%m%d')
+                }
                 final_product.update(product)
                 self.prices.append(final_product)
 
     def get_prices_per_product(self):
         import concurrent.futures
         queue_task = []
-        # counter = 0
+        counter = 0
         with concurrent.futures.ThreadPoolExecutor(max_workers=200) as executor:
             for product in self.products:
                 for city in self.geography:
@@ -350,10 +363,6 @@ class Prices(Connector):
                         }
 
                         queue_task.append(executor.submit(self.download_prices, **parameters))
-                        # counter += 1
-
-        print("Numero de tareas ...")
-        print(len(queue_task))
 
         for thread_price in queue_task:
             thread_price.result()

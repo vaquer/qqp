@@ -189,7 +189,9 @@ class InsertProductCatalog(luigi.Task):
             for product in prices:
                 instance = db.query(Product).filter_by(
                     nombre=product.get('nombre'),
-                    id_profeco=product.get('id')
+                    id_profeco=str(product.get('id')),
+                    catalogo=product.get('catalogo'),
+                    categoria=product.get('categoria'),
                 ).first()
 
                 if not instance:

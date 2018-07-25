@@ -31,6 +31,8 @@ class Product(Base):
     id = Column(Integer, primary_key=True)
     nombre = Column(String(250), nullable=False)
     id_profeco = Column(String(10), nullable=False, index=True, unique=True)
+    catalogo = Column(String(250), nullable=True)
+    categoria = Column(String(250), nullable=True)
     UniqueConstraint('id_profeco', name='uix_id_profeco')
 
 # from sqlalchemy import create_engine

@@ -30,6 +30,41 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
         - **subseccion1**: Nombre de la sub-sección obtenida en el endpoint anterior.
 
 El resultado final de este step es la generación del archivo `output/categories-{timestamp}.json`. Ejemplo: `output/categories-20180514.json`.
+
+Layout ejemplo:
+```json
+[
+    {
+        "id": "01",
+        "nombre": "ALIMENTOS",
+        "subcategoria": [
+            {
+                "id": "01",
+                "nombre": "ACEITES, GRASAS Y VINAGRES",
+                "subcategoria": [
+                    {
+                        "id": "01",
+                        "nombre": "ACEITES Y GRASAS"
+                    },
+                    {
+                        "id": "02",
+                        "nombre": "VINAGRES"
+                    }
+                ]
+            },
+            ...
+            {
+                "id": "09",
+                "nombre": "ALIMENTOS EN LATA Y PROCESADOS",
+                "subcategoria": [
+                    {
+                        "id": "01",
+                        "nombre": "ALIMENTOS EN LATA Y PROCESADOS"
+                    }
+                ]
+            }
+]
+```
 ### 1.2 Descargar ciudad y municipios
 Otro rasgo adicional en los datos expuestos por PROFECO es que es necesario consultar la información por ciudad y municipio. Por lo que es requisito descargar el catalogo completo de con el listado de ciudades y municipios registrados en la base de QQP para poder obtener el catálogo completo de productos.
 
@@ -42,6 +77,33 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
         - **idCiudad**: Se utiliza para obtener los municipios de una ciudad y solo se usa con `ve=selecMuni`.
 
 El resultado final de este step es la generación del archivo `output/geography-{timestamp}.json`. Ejemplo: `output/geography-20180514.json`
+
+Layout ejemplo:
+```json
+[
+    {
+        "id": "1201",
+        "titulo": "Acapulco",
+        "municipios": [
+            {
+                "id": "001",
+                "titulo": "Acapulco de Ju\u00e1rez"
+            }
+        ]
+    },
+    ...
+    {
+        "id": "0101",
+        "titulo": "Aguascalientes",
+        "municipios": [
+            {
+                "id": "001",
+                "titulo": "Aguascalientes"
+            }
+        ]
+    }
+]
+```
 ### 2 Descargar catálogo de productos
 Una vez que se cuentan con el catalogo de zonas geograficas registradas por profeco y con las categorias registradas el siguiente paso es descargar el catalogo de productos sin precios.
 
@@ -53,6 +115,25 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
         - **idMunicipio**: Id del municipio donde se buscaran productos.
 
 El resultado final de este step es la generación del archivo `output/products-{timestamp}.json`. Ejemplo: `output/products-20180514.json`
+
+Layout ejemplo:
+```json
+[
+    {
+        "id": 994,
+        "nombre": "FLAN",
+        "catalogo": "ALIMENTOS",
+        "categoria": "AZUCAR, ENDULZANTES Y CAFE"
+    },
+    ...
+    {
+        "id": 984,
+        "nombre": "POLVO P/HORNEAR",
+        "catalogo": "ALIMENTOS",
+        "categoria": "AZUCAR, ENDULZANTES Y CAFE"
+    }
+]
+```
 ### 3 Descargar marcas por producto
 Una vez que se cuentan con el catalogo de productos sin precios y las categorias registradas por profeco el siguiente paso es descargar el catalogo de marcas por producto sin precios.
 
@@ -64,6 +145,84 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
         - **idMunicipio**: Id del municipio donde se buscaran productos.
 
 El resultado final de este step es la generación del archivo `output/branded-products-{timestamp}.json`. Ejemplo: `output/branded-products-20180514.json`
+
+Layout ejemplo:
+```json
+[
+    {
+        "id": 166,
+        "nombre": "ACEITE",
+        "catalogo": "ALIMENTOS",
+        "categoria": "ACEITES, GRASAS Y VINAGRES",
+        "marcas": [
+            {
+                "id": "058",
+                "marca": "ACEITE 123 BOTELLA 1 LT. MIXTO"
+            },
+            {
+                "id": "127",
+                "marca": "ACEITE CANOIL BOTELLA 1 LT. CANOLA"
+            },
+            {
+                "id": "014",
+                "marca": "ACEITE CAPULLO BOTELLA 840 ML. CANOLA"
+            },
+            {
+                "id": "125",
+                "marca": "ACEITE KARTAMUS BOTELLA 900 ML. MIXTO"
+            },
+            {
+                "id": "112",
+                "marca": "ACEITE 1-2-3 BOTELLA 500 ML. MIXTO"
+            }
+        ]
+    },
+    {
+        "id": 9000,
+        "nombre": "ACEITE DE OLIVA",
+        "catalogo": "ALIMENTOS",
+        "categoria": "ACEITES, GRASAS Y VINAGRES",
+        "marcas": [
+            {
+                "id": "026",
+                "marca": "ACEITE DE OLIVA BORGES BOTELLA 500 ML. (ETIQ. AMARILLA)."
+            },
+            {
+                "id": "023",
+                "marca": "ACEITE DE OLIVA BORGES. ORIGINAL BOTELLA 500 ML. EXTRA VIRGEN (ETIQ. VERDE)."
+            },
+            {
+                "id": "004",
+                "marca": "ACEITE DE OLIVA CARBONELL BOTELLA 750 ML. EXTRA VIRGEN"
+            },
+            {
+                "id": "035",
+                "marca": "ACEITE DE OLIVA CARBONELL. CL\u00c1SICO LATA 450 ML."
+            },
+            {
+                "id": "036",
+                "marca": "ACEITE DE OLIVA CARBONELL. CL\u00c1SICO LATA 950 ML."
+            },
+            {
+                "id": "021",
+                "marca": "ACEITE DE OLIVA FILIPPO BERIO BOTELLA 750 ML. (IDEAL PARA COCINAR SALSAS Y PASTAS)"
+            }
+        ]
+    },
+    {
+        "id": 9002,
+        "nombre": "ALCAPARRA",
+        "catalogo": "ALIMENTOS",
+        "categoria": "ACEITES, GRASAS Y VINAGRES",
+        "marcas": [
+            {
+                "id": "003",
+                "marca": "ALCAPARRA EL SERPIS FRASCO 100 GR."
+            }
+        ]
+    }
+]
+```
 ### 4 Descargar precios por marca y municipio
 Una vez que se cuentan con el catalogo de productos sin precios y marcas registradas por profeco el siguiente paso es descargar la lista de precios por la relación producto/marca.
 
@@ -76,6 +235,50 @@ Las peticiones a los endpoints son realizadas mediante consultas GET con paramet
         - **idMunicipio**: Id del municipio donde se buscaran productos.
 
 El resultado final de este step es la generación del archivo `output/prices-per-product-{timestamp}.json`. Ejemplo: `output/prices-per-product-20180514.json`
+Layout ejemplo:
+```json
+[
+    {
+        "producto_id": 166,
+        "marca": "ACEITE CAPULLO BOTELLA 840 ML. CANOLA",
+        "id_marca": "014",
+        "date": "20180725",
+        "idEstablecimiento": "39000",
+        "estado": "Guerrero",
+        "establecimiento": "SORIANA HIPER SUCURSAL ACAPULCO COSTERA (274)",
+        "observacion": "17/07/2018",
+        "direccion": "COSTERA MIGUEL ALEMAN 240, ENTRE JUAN S. CANO Y GABRIEL",
+        "colonia": "FRACCIONAMIENTO HORNOS",
+        "ciudad": "Acapulco de Ju\u00e1rez",
+        "cp": "39350",
+        "telefono": "(744)4696160",
+        "latitud": "16.858598",
+        "longitud": "-99.890270",
+        "precio": "29.9",
+        "distancia": "0"
+    },
+    ...
+    {
+        "producto_id": 166,
+        "marca": "ACEITE CAPULLO BOTELLA 840 ML. CANOLA",
+        "id_marca": "014",
+        "date": "20180725",
+        "idEstablecimiento": "39003",
+        "estado": "Guerrero",
+        "establecimiento": "MEGA SORIANA SUCURSAL LA DIANA",
+        "observacion": "18/07/2018",
+        "direccion": "AV. FARALLON DEL OBISPO 216, ENTRE NAVEGANTE JUAN PEREZ",
+        "colonia": "FARALLON",
+        "ciudad": "Acapulco de Ju\u00e1rez",
+        "cp": "39690",
+        "telefono": "(744)4847861",
+        "latitud": "16.861329",
+        "longitud": "-99.870535",
+        "precio": "31.5",
+        "distancia": "0"
+    }
+]
+```
 ## Especificaciones tecnicas
 ### Instalación Local
 Para instalar la aplicación en ambientes locales en ambientes `Linux`, se debe hacer lo siguiente.
@@ -148,6 +351,29 @@ cd qqp
 kubectl apply -f kubernetes/postgres.yml
 kubectl apply -f kubernetes/api.yml
 ```
-*NOTA 1: No es necessario editar ni levantar el archivo kubernetes/postgres.yml si ya se hizo en la instalación del ETL*
 
-*NOTA 2: Es responsabilidad del administrador del sistema la creación los archivos con las definiciones de los servicios Kubernetes que expondran la aplicación.*
+*NOTA 1: La aplicación es expuesta en el puerto 8000 en el deployment de Kubernetes*
+
+*NOTA 2: No es necessario editar ni levantar el archivo kubernetes/postgres.yml si ya se hizo en la instalación del ETL*
+
+*NOTA 3: Es responsabilidad del administrador del sistema la creación los archivos con las definiciones de los servicios Kubernetes que expondran la aplicación.*
+
+# Construcción de imagenes Docker
+Un paso necesario para generar el ambiente Kubernetes es generar las imagenes Docker. Se necesitan correr los siguientes comandos desde la carpeta raiz del proyecto.
+
+- Docker API
+```sh
+docker build -t mxabierto/qqp-api:v1.0 api/Dockerfile
+```
+
+- Docker ETL
+```sh
+docker build -t mxabierto/qqp-etl:v1.0 etl/Dockerfile
+```
+
+- Docker Postgres
+```sh
+docker build -t mxabierto/qqp-postgres:v1.0 postgres
+```
+
+*NOTA: Se debera cambiar la versión que se coloca en el tag de la imagen cada vez que se realice un cambio*
