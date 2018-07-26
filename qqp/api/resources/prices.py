@@ -10,7 +10,8 @@ Definition of Price Resource
 import json
 import falcon
 import logging
-from sqlalchemy import desc
+from datetime import datetime
+from sqlalchemy import desc, extract
 from sqlalchemy_pagination import paginate
 from sqlalchemy.exc import DataError
 from db.models import Price
@@ -24,12 +25,28 @@ class PricesResource:
     def on_get(self, request, response, id_product=None):
         limit = request.get_param_as_int('limit', min=50, max=200) or 100
         page = request.get_param_as_int('page', 1)
+        sort = request.get_param('sort', default='fecha_actualizacion', required=False)
+        year_observation = request.get_param('anio_observacion', default=datetime.now().year, required=False)
+        month_observation = request.get_param('mes_observacion', default=datetime.now().month, required=False)
+        cp = request.get_param('cp', default=None, required=False)
         response.content_type = falcon.MEDIA_JSON
 
+        filters = []
+        if type(year_observation) is int or type(month_observation) is int:
+            month_format = '{:0>2d}'.format(month_observation)
+            date_filter = datetime.strptime('{0}{1}'.format(str(year_observation), month_format), '%Y%m')
+            filters.append(extract('year', Price.fecha_observacion) == date_filter.year)
+            filters.append(extract('month', Price.fecha_observacion) == date_filter.month)
+
+        if cp:
+            print("CP")
+            filters.append(Price.codigo_postal == cp)
+
         if id_product:
+            filters.append(Price.id_producto == str(id_product))
             try:
                 products = self.db.query(Price)\
-                    .filter(Price.id_producto == str(id_product))\
+                    .filter(*filters)\
                     .order_by(desc(Price.fecha_actualizacion))
 
                 if not products:
@@ -44,6 +61,7 @@ class PricesResource:
                 return
         else:
             products = self.db.query(Price)\
+                .filter(*filters)\
                 .order_by(desc(Price.fecha_actualizacion))\
                 .order_by(Price.id_producto)
 
