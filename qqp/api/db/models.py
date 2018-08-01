@@ -11,7 +11,6 @@ class Price(Base):
     __tablename__ = 'price'
     id = Column(Integer, primary_key=True)
     id_producto = Column(ForeignKey('product.id'), index=True)
-    id_marca = Column(String(10), index=True)
     marca = Column(String(300), nullable=False)
     id_establecimiento = Column(String(10), nullable=False)
     establecimiento = Column(String(200), nullable=False)

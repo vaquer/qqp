@@ -197,7 +197,9 @@ class InsertProductCatalog(luigi.Task):
                 if not instance:
                     new_product = Product(
                         nombre=product.get('nombre').strip(),
-                        id_profeco=product.get('id')
+                        id_profeco=product.get('id'),
+                        catalogo=product.get('catalogo'),
+                        categoria=product.get('categoria')
                     )
                     db.add(new_product)
                     db.commit()
